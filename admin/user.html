@@ -44,11 +44,11 @@
                     <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
                     <div class="col-sm-10">
                         <img src="images/2.jpg" alt="" class="user_pic">
-                        <input style="display: block" name="userPic" type="file" id="exampleInputFile">
+                        <input style="display: none" name="userPic" type="file" id="exampleInputFile">
                         <!-- 给label标签的for属性赋值,值是input标签的id,那这样的话点击label就相当于点击了input -->
                         <br>
                         <label for="exampleInputFile">
-                            <img src="./images/uploads_icon.jpg" style="height: 50px;" alt="">
+                            <img src="./images/szicon.jpg" style="height: 50px;cursor: pointer;" alt="">
                         </label>
                     </div>
                 </div>
@@ -69,5 +69,79 @@
         </div>
     </div>
 </body>
+<!-- <script src="./libs/./user.js"></script> -->
+<script src="./libs/./http.js"></script>
+<script>
+
+    $(function () {
+        //1.发送ajax请求获取个人信息
+        $.ajax({
+            type: 'get',
+            url: BigNew.user_detail,
+            success: function (backData) {
+                console.log(backData);
+                if (backData.code == 200) {
+                    for (var key in backData.data) {
+                        $('input.' + key).val(backData.data[key]);
+                    }
+                    $('img.user_pic').attr('src', backData.data.userPic)
+                }
+            }
+
+        });
+
+        //2.图片预览
+        $('#exampleInputFile').on('change', function () {
+            var filecon = this.files[0];//获取选中图片
+            console.log(filecon);
+
+            var url = URL.createObjectURL(filecon);//把这个文件生成url格式
+            $('img .user_pic').attr('src', url);//把url赋值给img
+        });
+
+        //3修改按钮添加事件
+        $('.btn-edit').on('click', function (e) {
+            e.preventDefault();
+            //创建一个formData对象
+            var fd = new FormData($('#form')[0]);//form 表单dom对象
+            //fd对象获取form表单中所有带有name属性的标签值,这个值要发送到接口中去
+            //所以这些name属性的取值 和接口的参数名要一致
+            //发送ajax请求
+            $.ajax({
+                type: 'post',
+                url: BigNew.user_edit,
+                data: fd,
+                contentType: false,//不要设置请求头
+                processData: false,//不要把我们传递的参数转成 key = value这种格式
+                success: function (backData) {
+                    console.log(backData);
+                    if (backData.code == 200) {
+                        alert('修改成功')
+                        //第一种解决方案 : 刷新下页面
+                        // parent.window.location.reload();//刷新父窗口
+                        $.ajax({
+                            url: window.BigNew.user_info,
+                            //设置请求头,把token令牌带过去
+                            // headers:{
+                            //     Authorization:window.localStorage.getItem('token')
+                            // },
+                            success: function (backData) {
+                                //console.log(backData);
+                                if (backData.code == 200) {
+                                    $('.user_info>span>i').text(backData.data.nickname);
+                                    $('.user_info>img').attr('src', backData.data.userPic);
+                                    $('.user_center_link>img').attr('src', backData.data.userPic);
+                                }
+                            }
+                        });
+                    }
+
+
+                }
+            })
+
+        })
+    });
+</script>
 
 </html>
