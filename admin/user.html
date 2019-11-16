@@ -56,7 +56,7 @@
                 <div class="form-group">
                     <label for="inputEmail4" class="col-sm-2 control-label">密码：</label>
                     <div class="col-sm-4">
-                        <input type="password" name="password" class="form-control password" id="inputEmail4"
+                        <input type="text" name="password" class="form-control password" id="inputEmail4"
                             value="12345678">
                     </div>
                 </div>
@@ -90,22 +90,23 @@
 
         });
 
-        //2.图片预览
-        $('#exampleInputFile').on('change', function () {
-            var filecon = this.files[0];//获取选中图片
-            console.log(filecon);
+       
+            //二: 图片预览
+            //给选择图片的input:file按钮设置一个值改s变事件
+            $('#exampleInputFile').on('change', function () {
+                var fileIcon = this.files[0]; //获取文件
+                //console.log(fileIcon);
+                var url = URL.createObjectURL(fileIcon); //把这个文件生成一个url
+                $('img.user_pic').attr('src', url); //把url交给预览用的img的src
+            })
 
-            var url = URL.createObjectURL(filecon);//把这个文件生成url格式
-            $('img .user_pic').attr('src', url);//把url赋值给img
-        });
-
-        //3修改按钮添加事件
+        //3修改按钮添加事件s
         $('.btn-edit').on('click', function (e) {
             e.preventDefault();
             //创建一个formData对象
             var fd = new FormData($('#form')[0]);//form 表单dom对象
-            //fd对象获取form表单中所有带有name属性的标签值,这个值要发送到接口中去
-            //所以这些name属性的取值 和接口的参数名要一致
+            //fd对象获取form表单中所有带有name属性的标签s值,这个值要发送到接口中去
+            //所以这些name属性的取值 和接口的参数名要一致s
             //发送ajax请求
             $.ajax({
                 type: 'post',
